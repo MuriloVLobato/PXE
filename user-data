@@ -1,0 +1,28 @@
+#cloud-config
+autoinstall:
+  version: 1
+  interactive-sections:
+    - none
+  locale: pt_BR.UTF-8
+  keyboard:
+    layout: br
+  network:
+    network:
+      version: 2
+      ethernets:
+        enp0s3: # Verifique o nome da interface do alvo
+          dhcp4: true
+  storage:
+    layout:
+      name: direct # Usa o disco inteiro
+  identity:
+    hostname: ubuntu-pxe
+    password: "ec3759e2c570d302e65ea20a7d985e3bc131024889ad902a046c385afcd71beec61a4f2a5e4ce56863f54840b7315d692cfaeda8239481e37b00cade86139abd" # Senha: 'ubuntu' (hash SHA-512)
+    username: host
+  ssh:
+    install-server: true
+    allow-pw: true
+  # EXECUÇÃO DO POST-INSTALL
+  late-commands:
+    - curtin in-target -- target/usr/bin/wget http://172.16.100.101/scripts/post-install.sh -O /tmp/post-install.sh
+    - curtin in-target -- target/bin/bash /tmp/post-install.sh
